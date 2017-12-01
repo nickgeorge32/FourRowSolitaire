@@ -20,6 +20,7 @@
 package FourRowSolitaire;
 
 import java.awt.Desktop;
+import java.awt.Window;
 import java.awt.event.*;
 import java.io.*;
 import java.net.URI;
@@ -49,6 +50,7 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 	private JMenuItem statistics = new JMenuItem("Statistics");
 	private JMenuItem options = new JMenuItem("Options");
 	private JMenuItem appearance = new JMenuItem("Change Appearance");
+	private final JMenuItem topTimes = new JMenuItem("Best Times");
 	private JMenuItem exit = new JMenuItem("Exit");
 
 	private JMenuItem help = new JMenuItem("View Help");
@@ -66,6 +68,7 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 		game.add(statistics);
 		game.add(options);
 		game.add(appearance);
+		game.add(topTimes);
 		game.addSeparator();
 		game.add(exit);
 
@@ -75,6 +78,7 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 		statistics.addActionListener(this);
 		options.addActionListener(this);
 		appearance.addActionListener(this);
+		topTimes.addActionListener(this);
 		exit.addActionListener(this);
 
 		helpMenu.add(help);
@@ -102,6 +106,8 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 		options.setAccelerator(KeyStroke.getKeyStroke("F5"));
 		appearance.setMnemonic('a');
 		appearance.setAccelerator(KeyStroke.getKeyStroke("F7"));
+		topTimes.setMnemonic('b');
+		topTimes.setAccelerator(KeyStroke.getKeyStroke("F8"));
 		exit.setMnemonic('x');
 
 		help.setMnemonic('v');
@@ -288,6 +294,8 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		Object localObject;
+
 		if (e.getSource() == newGame) {
 			super.newGame(0);
 		} else if (e.getSource() == undo) {
@@ -295,7 +303,7 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 		} else if (e.getSource() == hint) {
 			super.getHint();
 		} else if (e.getSource() == statistics) {
-			String fileLocation = System.getProperty("user.home") + System.getProperty("file.separator")
+			localObject = System.getProperty("user.home") + System.getProperty("file.separator")
 					+ "frs-statistics.dat";
 
 			int count = 0, temp = 0;
@@ -307,7 +315,7 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 			int gamesPlayed3h = 0, gamesWon3h = 0, winStreak3h = 0, lossStreak3h = 0, currentStreak3h = 0;
 
 			try {
-				File file = new File(fileLocation);
+				File file = new File((String) localObject);
 				file.createNewFile();
 				DataInputStream input = new DataInputStream(new FileInputStream(file));
 
@@ -506,13 +514,13 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 				return;
 			}
 		} else if (e.getSource() == options) {
-			ChangeOptions co = new ChangeOptions(this, super.getNewDrawCount(), super.getTimerNextGameStatus(),
+			localObject = new ChangeOptions(this, super.getNewDrawCount(), super.getTimerNextGameStatus(),
 					super.getWinAnimationStatus(), super.getWinSoundsStatus(), super.getNewDifficulty());
-			int drawCount = co.getDrawCount();
-			int timerStatus = co.getTimer();
-			int animationStatus = co.getAnimation();
-			int soundsStatus = co.getSounds();
-			int difficulty = co.getDifficulty();
+			int drawCount = ((ChangeOptions) localObject).getDrawCount();
+			int timerStatus = ((ChangeOptions) localObject).getTimer();
+			int animationStatus = ((ChangeOptions) localObject).getAnimation();
+			int soundsStatus = ((ChangeOptions) localObject).getSounds();
+			int difficulty = ((ChangeOptions) localObject).getDifficulty();
 
 			if (drawCount != -1) {
 				super.setNewDrawCount(drawCount);
@@ -524,16 +532,19 @@ public class FourRowSolitaire extends SolitaireBoard implements ActionListener {
 
 			super.saveOptions();
 		} else if (e.getSource() == appearance) {
-			ChangeAppearance ca = new ChangeAppearance(this, super.getDeckNumber(), super.getBackgroundNumber());
-			int deckNumber = ca.getDeckNumber();
-			int backgroundNumber = ca.getBackgroundNumber();
-			ca.dispose();
+			localObject = new ChangeAppearance(this, super.getDeckNumber(), super.getBackgroundNumber());
+			int deckNumber = ((ChangeAppearance) localObject).getDeckNumber();
+			int backgroundNumber = ((ChangeAppearance) localObject).getBackgroundNumber();
+			((ChangeAppearance) localObject).dispose();
 
 			if (deckNumber != -1) {
 				super.setAppearance(deckNumber, backgroundNumber);
 			}
 
 			super.saveOptions();
+		} else if(e.getSource() == topTimes) {
+			localObject = new TopTimes(this);
+			((TopTimes) localObject).setVisible(true);
 		} else if (e.getSource() == exit) {
 			super.wl.windowClosing(null);
 		}
